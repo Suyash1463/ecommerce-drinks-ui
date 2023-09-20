@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./App.css"; // Add Bootstrap CSS to your App.css
 
-function App() {
+import BeerList from "./components/BeerList";
+import SearchBar from "./components/SearchBar";
+
+const App = () => {
+  const [beers, setBeers] = useState([]);
+  const [filteredBeers, setFilteredBeers] = useState([]);
+
+  useEffect(() => {
+    axios.get("https://api.punkapi.com/v2/beers").then((response) => {
+      setBeers(response.data);
+      setFilteredBeers(response.data);
+    });
+  }, []);
+
+  const handleSearch = (query) => {
+    const filtered = beers.filter((beer) =>
+      beer.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredBeers(filtered);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h1 className="mt-4 mb-4">Punk API Beers</h1>
+      <SearchBar handleSearch={handleSearch} />
+      <BeerList beers={filteredBeers} />
     </div>
   );
-}
+};
 
 export default App;
